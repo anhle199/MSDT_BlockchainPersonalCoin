@@ -1,0 +1,27 @@
+{
+  "name": "@anhle199/blockchain_personal_coin",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "engines": {
+    "node": ">=16"
+  },
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf dist && rm -rf *.tsbuildinfo",
+    "start": "npm run build && node dist/index.js"
+  },
+  "keywords": [
+    "typescript",
+    "project template",
+    "typescript project template"
+  ],
+  "author": "Le Hoang Anh",
+  "license": "ISC",
+  "devDependencies": {
+    "typescript": "^5.0.4"
+  },
+  "dependencies": {
+    "dotenv": "^16.0.3"
+  }
+}
