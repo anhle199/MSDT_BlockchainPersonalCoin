@@ -1,0 +1,1 @@
+export const getCurrentTimestamp = () => Date.now() / 1000.0
