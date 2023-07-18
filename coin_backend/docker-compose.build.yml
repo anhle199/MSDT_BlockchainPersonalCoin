@@ -1,0 +1,9 @@
+version: "3"
+
+services:
+  coin_backend:
+    #platform: linux/x86_64
+    image: lhanh199/msdt_coin_backend
+    build:
+      context: .
+      dockerfile: ./Dockerfile

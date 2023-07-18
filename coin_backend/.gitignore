@@ -55,10 +55,15 @@ typings/
 .yarn-integrity
 
 # dotenv environment variables file
-.env
+*.env.*
+!.env.template
 
 # Transpiled JavaScript files from Typescript
 /dist
 
 # Cache used by TypeScript's incremental build
 *.tsbuildinfo
+
+*.swp
+*.DS_Store
+*.vscode
