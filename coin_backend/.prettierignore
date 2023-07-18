@@ -1,5 +1,3 @@
 dist
-node_modules
 *.json
-yarn.lock
-package-lock.json
+node_modules

@@ -1,14 +1,5 @@
-.git
-.gitignore
-
 node_modules
-dist
-
-.prettierrc
-.prettierignore
-
-.env.template
-
-Dockerfile
-docker-compose.build.yml
-build.sh
+npm-debug.log
+/dist
+# Cache used by TypeScript's incremental build
+*.tsbuildinfo
