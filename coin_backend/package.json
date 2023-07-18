@@ -1,65 +1,27 @@
 {
   "name": "@anhle199/blockchain_personal_coin",
-  "version": "0.0.1",
-  "description": "HA Coin",
-  "keywords": [
-    "loopback-application",
-    "loopback",
-    "blockchain",
-    "coin"
-  ],
+  "version": "1.0.0",
+  "description": "",
   "main": "dist/index.js",
-  "types": "dist/index.d.ts",
   "engines": {
     "node": ">=16"
   },
   "scripts": {
-    "build": "lb-tsc",
-    "build:watch": "lb-tsc --watch",
-    "premigrate": "yarn run build",
-    "migrate": "node ./dist/migrate",
-    "preopenapi-spec": "yarn run build",
-    "openapi-spec": "node ./dist/openapi-spec",
-    "prestart": "yarn run rebuild",
-    "start": "node -r source-map-support/register .",
-    "clean": "lb-clean dist *.tsbuildinfo .eslintcache",
-    "rebuild": "yarn run clean && yarn run build",
-    "prettier:cli": "lb-prettier \"**/*.ts\" \"**/*.js\"",
-    "prettier:check": "yarn run prettier:cli -l",
-    "prettier:fix": "yarn run prettier:cli --write"
+    "build": "tsc",
+    "clean": "rm -rf dist && rm -rf *.tsbuildinfo",
+    "start": "npm run build && node dist/index.js"
   },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/anhle199/MSDT_BlockchainPersonalCoin/tree/master/coin_backend"
-  },
-  "author": "Anh Le <lehoanganh.le2001@gmail.com>",
-  "license": "",
-  "files": [
-    "README.md",
-    "dist",
-    "src",
-    "!*/__tests__"
+  "keywords": [
+    "typescript",
+    "project template",
+    "typescript project template"
   ],
-  "dependencies": {
-    "@loopback/authentication": "9.0.10",
-    "@loopback/boot": "5.0.10",
-    "@loopback/core": "4.0.10",
-    "@loopback/health": "^0.11.10",
-    "@loopback/repository": "5.1.5",
-    "@loopback/rest": "12.0.10",
-    "@loopback/rest-explorer": "5.0.10",
-    "@loopback/service-proxy": "5.0.10",
-    "dotenv-flow": "^3.2.0",
-    "lodash": "^4.17.21"
-  },
+  "author": "Le Hoang Anh",
+  "license": "ISC",
   "devDependencies": {
-    "@loopback/build": "9.0.10",
-    "@loopback/testlab": "5.0.10",
-    "@types/lodash": "^4.14.192",
-    "@types/node": "^14.18.42",
-    "prettier": "^2.8.7",
-    "source-map-support": "^0.5.21",
-    "tslib": "^2.5.0",
     "typescript": "~4.9.5"
+  },
+  "dependencies": {
+    "dotenv": "^16.0.3"
   }
 }
