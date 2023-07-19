@@ -31,3 +31,7 @@ export const BLOCK_GENERATION_INTERVAL = 10
 export const DIFFICULTY_ADJUSTMENT_INTERVAL = 10
 // in seconds
 export const SECURITY_BLOCK_TIMESTAMP = 60
+
+export enum SCHEMA_TYPES {
+  BLOCK = 'block',
+}

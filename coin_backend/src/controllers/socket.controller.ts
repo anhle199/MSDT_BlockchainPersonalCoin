@@ -7,8 +7,9 @@ import {
   isUndefined,
   safeParseJson,
   sendMessage,
+  validateAvailbleSchema,
 } from '../common'
-import { BLOCKCHAIN_MESSAGE_TYPES, EVENT_TYPES, SOCKET_MESSAGE_TYPES } from '../constants'
+import { BLOCKCHAIN_MESSAGE_TYPES, EVENT_TYPES, SCHEMA_TYPES, SOCKET_MESSAGE_TYPES } from '../constants'
 import { SocketServerStorage } from '../global-storage'
 import { Block } from '../models'
 import { BlockchainMessageProvider } from '../providers'
@@ -97,13 +98,12 @@ export class SocketController extends BaseSocketController {
       return
     }
 
-    const safeReceivedBlocks = receivedBlocks.map(block => Block.from(block)) as Block[]
-    if (safeReceivedBlocks.some(block => isUndefined(block))) {
+    if (receivedBlocks.some(block => !validateAvailbleSchema(block, SCHEMA_TYPES.BLOCK))) {
       console.log('There is at least one received block which is invalid')
       return
     }
 
-    const latestBlockReceived = safeReceivedBlocks[safeReceivedBlocks.length - 1]
+    const latestBlockReceived = receivedBlocks[receivedBlocks.length - 1]
     const latestBlockHeld = getLatestBlock()
 
     if (latestBlockReceived.index > latestBlockHeld.index) {
@@ -114,13 +114,13 @@ export class SocketController extends BaseSocketController {
         if (this.blockService.addBlockToChain(latestBlockReceived)) {
           broadcastLatestBlock()
         }
-      } else if (safeReceivedBlocks.length === 1) {
+      } else if (receivedBlocks.length === 1) {
         console.log('We have to query the chain from our peer')
         const message = BlockchainMessageProvider.instance.getMessage(BLOCKCHAIN_MESSAGE_TYPES.QUERY_CHAIN)
         broadcast(message)
       } else {
         console.log('Received blockchain is longer than current blockchain')
-        this.blockService.replaceChain(safeReceivedBlocks)
+        this.blockService.replaceChain(receivedBlocks)
       }
     } else {
       console.log('Received blockchain is not longer than received blockchain. Do nothing')

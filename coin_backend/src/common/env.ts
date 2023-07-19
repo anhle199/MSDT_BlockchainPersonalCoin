@@ -1,5 +1,5 @@
 import { safeParseJson } from './json'
-import { isUndefined } from './validation'
+import { isUndefined } from './type-validation'
 
 type CastedTypeEnv = 'string' | 'number' | 'boolean' | 'arrayOfString' | 'arrayOfNumber' | 'arrayOfBoolean'
 type Options = {

@@ -3,7 +3,7 @@ import { BLOCKCHAIN_MESSAGE_TYPES } from '../constants'
 import { SocketServerStorage } from '../global-storage'
 import { BlockchainMessageProvider } from '../providers'
 import { TMessage } from '../types'
-import { isString } from './validation'
+import { isString } from './type-validation'
 
 export const getSocketRemoteUrl = (ws: any) => {
   // client close
