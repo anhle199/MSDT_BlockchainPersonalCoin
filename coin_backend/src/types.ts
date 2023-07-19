@@ -2,13 +2,14 @@ import { Request, Response } from 'express'
 import WebSocket from 'ws'
 import { EVENT_TYPES, HTTP_METHODS, SOCKET_MESSAGE_TYPES } from './constants'
 import { BaseRestController, BaseSocketController } from './controllers'
-import { Block, UnspentTransactionOutput } from './models'
+import { Block, Transaction, UnspentTransactionOutput } from './models'
 import { SocketServer } from './servers'
 
 export type TApplicationStorage = {
   GENESIS_BLOCK: Block
   BLOCKCHAIN: Block[]
   UNSPENT_TRANSACTION_OUTPUTS: UnspentTransactionOutput[]
+  TRANSACTION_POOL: Transaction[]
 }
 
 export type TSocketServerStorage = {

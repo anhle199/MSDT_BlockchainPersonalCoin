@@ -18,6 +18,11 @@ export const verifySignature = (data: string, signature: string, publicKey: stri
   return key.verify(data, signature)
 }
 
-export const getPublicKey = (privateKey: string) => {
-  return ec.keyFromPrivate(privateKey, 'hex').getPublic().encode('hex', true)
+export const getPublicKeyFromPrivate = (privateKey: string) => {
+  return ec.keyFromPrivate(privateKey, 'hex').getPublic().encode('hex', false)
+}
+
+export const generatePrivateKey = () => {
+  const keyPair = ec.genKeyPair()
+  return keyPair.getPrivate().toString(16)
 }

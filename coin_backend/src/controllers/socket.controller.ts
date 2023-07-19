@@ -2,6 +2,7 @@ import WebSocket from 'ws'
 import {
   broadcast,
   broadcastLatestBlock,
+  broadcastTransactionPool,
   getLatestBlock,
   getSocketRemoteUrl,
   isUndefined,
@@ -10,21 +11,23 @@ import {
   validateAvailbleSchema,
 } from '../common'
 import { BLOCKCHAIN_MESSAGE_TYPES, EVENT_TYPES, SCHEMA_TYPES, SOCKET_MESSAGE_TYPES } from '../constants'
-import { SocketServerStorage } from '../global-storage'
-import { Block } from '../models'
+import { ApplicationStorage, SocketServerStorage } from '../global-storage'
+import { Block, Transaction } from '../models'
 import { BlockchainMessageProvider } from '../providers'
-import { BlockService } from '../services'
+import { BlockService, TransactionPoolService } from '../services'
 import { TMessage, TSocketEventSpec } from '../types'
 import { BaseSocketController } from './base'
 
 export class SocketController extends BaseSocketController {
   eventSpecs: TSocketEventSpec[]
   blockService: BlockService
+  transactionPoolService: TransactionPoolService
 
   constructor() {
     super()
 
     this.blockService = new BlockService()
+    this.transactionPoolService = new TransactionPoolService()
     this.eventSpecs = [
       {
         eventName: 'message',
@@ -72,9 +75,20 @@ export class SocketController extends BaseSocketController {
         sendMessage(socket, messageToSend)
         break
       case SOCKET_MESSAGE_TYPES.RESPONSE_CHAIN:
-        const receivedBlocks: Block[] = data
-        if (receivedBlocks !== null) {
+        const receivedBlocks = safeParseJson<Block[]>(data)
+        if (receivedBlocks) {
           this.handleBlockchainResponse(receivedBlocks)
+        }
+        break
+      case SOCKET_MESSAGE_TYPES.QUERY_TRANSACTION_POOL:
+        blockchainMessageType = BLOCKCHAIN_MESSAGE_TYPES.RESPONSE_TRANSACTION_POOL
+        messageToSend = BlockchainMessageProvider.instance.getMessage(blockchainMessageType)
+        sendMessage(socket, messageToSend)
+        break
+      case SOCKET_MESSAGE_TYPES.RESPONSE_TRANSACTION_POOL:
+        const receivedTransactions = safeParseJson<Transaction[]>(data)
+        if (receivedTransactions) {
+          this.handleTransactionPoolResponse(receivedTransactions)
         }
         break
     }
@@ -125,5 +139,18 @@ export class SocketController extends BaseSocketController {
     } else {
       console.log('Received blockchain is not longer than received blockchain. Do nothing')
     }
+  }
+
+  private handleTransactionPoolResponse(receivedTransactions: Transaction[]) {
+    receivedTransactions.forEach(transaction => {
+      const isAdded = this.transactionPoolService.addToTransactionPool(
+        transaction,
+        ApplicationStorage.UNSPENT_TRANSACTION_OUTPUTS,
+      )
+
+      if (isAdded) {
+        broadcastTransactionPool()
+      }
+    })
   }
 }

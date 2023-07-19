@@ -1,5 +1,5 @@
 import { Transaction, TransactionInput, UnspentTransactionOutput } from '../models'
-import { getPublicKey, sha256, sign } from './crypto'
+import { getPublicKeyFromPrivate, sha256, sign } from './crypto'
 
 export const calculateTransactionId = (transaction: Omit<Transaction, 'id'>) => {
   const txInputContent = transaction.inputs.reduce(
@@ -21,14 +21,14 @@ export const signTransactionInput = (
   privateKey: string,
   unspentTxOutputs: UnspentTransactionOutput[],
 ) => {
-  const referencedUnspentTxOutput = findUnspentTxOut(txInput, unspentTxOutputs)
+  const referencedUnspentTxOutput = findUnspentTxOutput(txInput, unspentTxOutputs)
   if (!referencedUnspentTxOutput) {
     console.log('could not find referenced txOut')
     throw Error()
   }
 
   const referencedAddress = referencedUnspentTxOutput.address
-  if (getPublicKey(privateKey) !== referencedAddress) {
+  if (getPublicKeyFromPrivate(privateKey) !== referencedAddress) {
     console.log(
       'trying to sign an input with private' + ' key that does not match the address that is referenced in txIn',
     )
@@ -39,25 +39,32 @@ export const signTransactionInput = (
   return signature
 }
 
-export const findUnspentTxOut = (txInput: TransactionInput, unspentTxOutputs: UnspentTransactionOutput[]) => {
-  return unspentTxOutputs.find(it => it.outputId === txInput.outputId && it.outputIndex === txInput.outputIndex)
+export const findUnspentTxOutput = (txInput: TransactionInput, unspentTxOutputs: UnspentTransactionOutput[]) => {
+  const { outputId, outputIndex } = txInput
+  return unspentTxOutputs.find(it => it.outputId === outputId && it.outputIndex === outputIndex)
 }
 
-//export const validateTransactionOutputAddress = (address: string) => {
-//if (address.length !== 130) {
-//console.log('invalid public key length')
-//return false
-//}
+export const includeUnspentTxOutput = (
+  unspentTxOutputs: UnspentTransactionOutput[],
+  searchValue: { outputId: string; outputIndex: number },
+) => {
+  const { outputId, outputIndex } = searchValue
+  return unspentTxOutputs.some(it => it.outputId === outputId && it.outputIndex === outputIndex)
+}
 
-//if (!address.match('^[a-fA-F0-9]+$')) {
-//console.log('public key must contain only hex characters')
-//return false
-//}
+export const calculateTxOutputsForAmount = (amount: number, unspentTxOutputs: UnspentTransactionOutput[]) => {
+  let currentAmount = 0
+  const includedUnspentTxOutputs = []
 
-//if (!address.startsWith('04')) {
-//console.log('public key must start with 04')
-//return false
-//}
+  for (const unspentOutput of unspentTxOutputs) {
+    includedUnspentTxOutputs.push(unspentOutput)
+    currentAmount = currentAmount + unspentOutput.amount
 
-//return true
-//}
+    if (currentAmount >= amount) {
+      const leftOverAmount = currentAmount - amount
+      return { includedUnspentTxOutputs, leftOverAmount }
+    }
+  }
+
+  // return undefined
+}

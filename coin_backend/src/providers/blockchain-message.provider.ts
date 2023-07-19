@@ -17,7 +17,7 @@ export class BlockchainMessageProvider {
       case BLOCKCHAIN_MESSAGE_TYPES.RESPONSE_CHAIN:
         return {
           type: SOCKET_MESSAGE_TYPES.RESPONSE_CHAIN,
-          data: ApplicationStorage.BLOCKCHAIN,
+          data: JSON.stringify(ApplicationStorage.BLOCKCHAIN),
         }
       case BLOCKCHAIN_MESSAGE_TYPES.QUERY_LATEST_BLOCK:
         return {
@@ -27,7 +27,17 @@ export class BlockchainMessageProvider {
       case BLOCKCHAIN_MESSAGE_TYPES.RESPONSE_LATEST_BLOCK:
         return {
           type: SOCKET_MESSAGE_TYPES.RESPONSE_CHAIN,
-          data: [getLatestBlock()],
+          data: JSON.stringify([getLatestBlock()]),
+        }
+      case BLOCKCHAIN_MESSAGE_TYPES.QUERY_TRANSACTION_POOL:
+        return {
+          type: SOCKET_MESSAGE_TYPES.QUERY_TRANSACTION_POOL,
+          data: null,
+        }
+      case BLOCKCHAIN_MESSAGE_TYPES.RESPONSE_TRANSACTION_POOL:
+        return {
+          type: SOCKET_MESSAGE_TYPES.RESPONSE_TRANSACTION_POOL,
+          data: JSON.stringify(ApplicationStorage.TRANSACTION_POOL),
         }
     }
   }

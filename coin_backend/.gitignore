@@ -34,3 +34,5 @@ testem.log
 *.swp
 *.env*
 !.env.template
+
+data/private_key.txt

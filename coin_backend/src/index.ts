@@ -1,7 +1,13 @@
 import dotenv from 'dotenv'
 import { Application } from './application'
 import { getEnv } from './common'
-import { BlockController, P2PController, SocketController } from './controllers'
+import {
+  BlockController,
+  P2PController,
+  SocketController,
+  TransactionController,
+  WalletController,
+} from './controllers'
 
 dotenv.config()
 
@@ -11,7 +17,7 @@ const socketPort = getEnv('SOCKET_PORT', { castToType: 'number', throwErrorIfNot
 const app = new Application({
   rest: {
     port: restPort,
-    controllers: [new BlockController(), new P2PController()],
+    controllers: [new BlockController(), new P2PController(), new TransactionController(), new WalletController()],
   },
   socket: {
     port: socketPort,

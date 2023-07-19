@@ -31,7 +31,8 @@ export class P2PController extends BaseRestController {
   }
 
   connectToPeer(request: Request, response: Response) {
-    SocketServerStorage.INSTANCE?.connectToAnotherServer(request.body.connectionUrl)
+    const connectionUrl = String(request.body.connectionUrl)
+    SocketServerStorage.INSTANCE?.connectToAnotherServer(connectionUrl)
     response.sendStatus(204)
   }
 }

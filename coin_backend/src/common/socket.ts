@@ -32,3 +32,9 @@ export const broadcastLatestBlock = () => {
   const messageToSend = BlockchainMessageProvider.instance.getMessage(blockchainMessageType)
   broadcast(messageToSend)
 }
+
+export const broadcastTransactionPool = () => {
+  const blockchainMessageType = BLOCKCHAIN_MESSAGE_TYPES.RESPONSE_TRANSACTION_POOL
+  const messageToSend = BlockchainMessageProvider.instance.getMessage(blockchainMessageType)
+  broadcast(messageToSend)
+}

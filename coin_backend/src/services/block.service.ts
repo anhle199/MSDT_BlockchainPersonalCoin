@@ -6,19 +6,24 @@ import {
   findNonce,
   getCurrentTimestamp,
   getLatestBlock,
+  getTransactionPool,
   hashMatchesDifficulty,
+  validateAvailbleSchema,
   validateBlockTimestamp,
 } from '../common'
-import { SECURITY_BLOCK_TIMESTAMP } from '../constants'
+import { SCHEMA_TYPES, SECURITY_BLOCK_TIMESTAMP } from '../constants'
 import { ApplicationStorage } from '../global-storage'
-import { Block, Transaction } from '../models'
+import { Block, Transaction, UnspentTransactionOutput } from '../models'
+import { TransactionPoolService } from './transaction-pool.service'
 import { TransactionService } from './transaction.service'
 
 export class BlockService {
   transactionService: TransactionService
+  transactionPoolService: TransactionPoolService
 
-  constructor(transactionService?: TransactionService) {
+  constructor(transactionService?: TransactionService, transactionPoolService?: TransactionPoolService) {
     this.transactionService = transactionService ?? new TransactionService()
+    this.transactionPoolService = transactionPoolService ?? new TransactionPoolService(this.transactionService)
   }
 
   createBlock(data: Transaction[], prevBlock: Block) {
@@ -31,10 +36,10 @@ export class BlockService {
     return new Block({ index, hash, previousHash, timestamp, data, difficulty, nonce })
   }
 
-  generateNextBlock(data: Transaction[]) {
+  generateNextBlock(address: string) {
     const latestBlock = getLatestBlock()
-    const coinbaseTx = this.transactionService.generateCoinbaseTransaction('', latestBlock.index + 1)
-    const transactions = [coinbaseTx, ...data]
+    const coinbaseTx = this.transactionService.generateCoinbaseTransaction(address, latestBlock.index + 1)
+    const transactions = [coinbaseTx, ...getTransactionPool()]
 
     const nextBlock = this.createBlock(transactions, latestBlock)
 
@@ -47,6 +52,11 @@ export class BlockService {
   }
 
   validateNewBlock(newBlock: Block, prevBlock: Block) {
+    if (!validateAvailbleSchema(newBlock, SCHEMA_TYPES.BLOCK)) {
+      console.log('invalid block structure')
+      return false
+    }
+
     if (newBlock.index !== prevBlock.index + 1) {
       console.log(`invalid index, new: ${newBlock.index}, prev: ${prevBlock.index}`)
       return false
@@ -85,17 +95,30 @@ export class BlockService {
       return false
     }
 
+    let unspentTxOutputs: UnspentTransactionOutput[] = []
+
     for (let i = 1; i < chain.length; i++) {
       if (!this.validateNewBlock(chain[i], chain[i - 1])) {
         console.log(`invalid two adjacent blocks, indexes: ${i - 1} and ${i}`)
         return false
       }
+
+      const { data: transactions, index: blockIndex } = chain[i]
+
+      if (
+        !this.transactionService.validateBlockTransactionsStructure(transactions) ||
+        !this.transactionService.validateBlockTransactions(transactions, unspentTxOutputs, blockIndex)
+      ) {
+        console.log(`invalid block transactions, index: ${i}`)
+        return false
+      }
+
+      unspentTxOutputs = this.transactionService.updateUnspentTransactionOutputs(transactions, unspentTxOutputs)
     }
 
     return true
   }
 
-  // TODO: private key - address
   addBlockToChain(newBlock: Block) {
     if (!this.validateNewBlock(newBlock, getLatestBlock())) {
       return false
@@ -106,7 +129,7 @@ export class BlockService {
 
     if (
       !this.transactionService.validateBlockTransactionsStructure(transactions) ||
-      !this.transactionService.validateBlockTransactions(transactions, unspentTxOutputs, '', index)
+      !this.transactionService.validateBlockTransactions(transactions, unspentTxOutputs, index)
     ) {
       return false
     }
@@ -116,6 +139,7 @@ export class BlockService {
       transactions,
       unspentTxOutputs,
     )
+    this.transactionPoolService.updateTransactionPool(ApplicationStorage.UNSPENT_TRANSACTION_OUTPUTS)
 
     return true
   }
@@ -126,7 +150,14 @@ export class BlockService {
       accumulateDifficulty(newChain) > accumulateDifficulty(ApplicationStorage.BLOCKCHAIN)
     ) {
       console.log(`replacing current chain by new chain`)
+
+      const newUnspentTxOutputs = newChain.reduce((result: UnspentTransactionOutput[], block) => {
+        return this.transactionService.updateUnspentTransactionOutputs(block.data, result)
+      }, [])
+
       ApplicationStorage.BLOCKCHAIN = newChain
+      ApplicationStorage.UNSPENT_TRANSACTION_OUTPUTS = newUnspentTxOutputs
+      this.transactionPoolService.updateTransactionPool(newUnspentTxOutputs)
       broadcastLatestBlock()
     } else {
       console.log("failed to replace new chain because it's an invalid chain")

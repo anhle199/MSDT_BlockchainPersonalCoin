@@ -90,8 +90,8 @@ export const TRANSACTION_OUTPUT_SCHEMA: JSONSchemaType<TransactionOutput> = {
   properties: {
     address: {
       type: 'string',
-      maxLength: 130,
       minLength: 130,
+      maxLength: 130,
       pattern: '^04[a-fA-F0-9]+$',
     },
     amount: {
@@ -111,10 +111,14 @@ export const TRANSACTION_SCHEMA: JSONSchemaType<Transaction> = {
     inputs: {
       type: 'array',
       items: TRANSACTION_INPUT_SCHEMA,
+      minItems: 1,
+      maxItems: 1,
     },
     outputs: {
       type: 'array',
       items: TRANSACTION_OUTPUT_SCHEMA,
+      minItems: 1,
+      maxItems: 1,
     },
   },
   required: ['id', 'inputs', 'outputs'],

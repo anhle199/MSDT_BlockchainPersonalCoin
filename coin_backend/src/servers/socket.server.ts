@@ -1,5 +1,5 @@
 import WebSocket, { Server, WebSocketServer } from 'ws'
-import { getSocketRemoteUrl, sendMessage } from '../common'
+import { broadcast, getSocketRemoteUrl, sendMessage } from '../common'
 import { BLOCKCHAIN_MESSAGE_TYPES, EVENT_TYPES } from '../constants'
 import { BaseSocketController } from '../controllers'
 import { SocketServerStorage } from '../global-storage'
@@ -33,6 +33,12 @@ export class SocketServer {
 
         const message = BlockchainMessageProvider.instance.getMessage(BLOCKCHAIN_MESSAGE_TYPES.QUERY_LATEST_BLOCK)
         sendMessage(socket, message)
+
+        // query transactions pool only some time after chain query
+        setTimeout(() => {
+          const message = BlockchainMessageProvider.instance.getMessage(BLOCKCHAIN_MESSAGE_TYPES.QUERY_TRANSACTION_POOL)
+          broadcast(message)
+        }, 1000)
       })
 
       this.isSetup = true
@@ -75,6 +81,12 @@ export class SocketServer {
 
       const message = BlockchainMessageProvider.instance.getMessage(BLOCKCHAIN_MESSAGE_TYPES.QUERY_LATEST_BLOCK)
       sendMessage(client, message)
+
+      // query transactions pool only some time after chain query
+      setTimeout(() => {
+        const message = BlockchainMessageProvider.instance.getMessage(BLOCKCHAIN_MESSAGE_TYPES.QUERY_TRANSACTION_POOL)
+        broadcast(message)
+      }, 1000)
     })
 
     client.on('error', () => {

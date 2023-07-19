@@ -1,5 +1,6 @@
 import { RestServer, SocketServer } from './servers'
 import { TApplicationConfig } from './types'
+import { Wallet } from './wallet'
 
 export class Application {
   restServer: RestServer
@@ -13,6 +14,7 @@ export class Application {
   setup() {
     this.restServer.setup()
     this.socketServer.setup()
+    Wallet.instance.init()
   }
 
   start() {
