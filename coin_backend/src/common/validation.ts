@@ -8,3 +8,7 @@ export const isValidDateString = (value: string) => {
   const date = new Date(value)
   return !Number.isNaN(date.getTime())
 }
+
+export const isString = (value: any): value is string => typeof value === 'string'
+
+export const isValidNumber = (value: any): value is number => typeof value === 'number' && !Number.isNaN(value)

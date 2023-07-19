@@ -1,5 +1,5 @@
-import { calculateBlockHash, getCurrentTimestamp, getLatestBlock } from '../common'
-import { AppConstants } from '../constants'
+import { broadcastLatestBlock, calculateBlockHash, getCurrentTimestamp, getLatestBlock } from '../common'
+import { ApplicationStorage } from '../global-storage'
 import { Block } from '../models'
 
 export class BlockService {
@@ -33,7 +33,7 @@ export class BlockService {
 
   validateChain(chain: Block[]) {
     const genesisBlock = chain[0]
-    if (JSON.stringify(genesisBlock) === JSON.stringify(AppConstants.GENESIS_BLOCK)) {
+    if (JSON.stringify(genesisBlock) === JSON.stringify(ApplicationStorage.GENESIS_BLOCK)) {
       console.log('invalid genesis block')
       return false
     }
@@ -50,7 +50,7 @@ export class BlockService {
 
   addBlockToChain(newBlock: Block) {
     if (this.validateNewBlock(newBlock, getLatestBlock())) {
-      AppConstants.BLOCKCHAIN.push(newBlock)
+      ApplicationStorage.BLOCKCHAIN.push(newBlock)
       return true
     }
 
@@ -58,10 +58,10 @@ export class BlockService {
   }
 
   replaceChain(newChain: Block[]) {
-    if (this.validateChain(newChain) && newChain.length > AppConstants.BLOCKCHAIN.length) {
+    if (this.validateChain(newChain) && newChain.length > ApplicationStorage.BLOCKCHAIN.length) {
       console.log(`replacing current chain by new chain`)
-      AppConstants.BLOCKCHAIN = newChain
-      //broadcastLatest()
+      ApplicationStorage.BLOCKCHAIN = newChain
+      broadcastLatestBlock()
     } else {
       console.log("failed to replace new chain because it's an invalid chain")
     }

@@ -7,16 +7,16 @@ export class Application {
 
   constructor(config: TApplicationConfig) {
     this.restServer = new RestServer(config.rest)
-    // this.socketServer = new SocketServer(config.socket)
+    this.socketServer = new SocketServer(config.socket)
   }
 
   setup() {
     this.restServer.setup()
-    // this.socketServer.setup()
+    this.socketServer.setup()
   }
 
   start() {
     this.restServer.start()
-    // this.socketServer.start()
+    this.socketServer.start()
   }
 }

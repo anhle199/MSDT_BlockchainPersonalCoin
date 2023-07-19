@@ -1,4 +1,5 @@
 import express, { Express } from 'express'
+import { HTTP_METHODS } from '../constants'
 import { BaseRestController } from '../controllers'
 import { sequenceMiddleware } from '../middlewares'
 import { TRestServerConfig } from '../types'
@@ -33,6 +34,10 @@ export class RestServer {
   }
 
   start() {
+    if (!this.isSetup) {
+      throw Error('The rest server must be configured before starting, call setup() method to configure')
+    }
+
     if (!this.isStart) {
       const port = this.config.port
       this.server.listen(port, () => {
@@ -44,24 +49,24 @@ export class RestServer {
   }
 
   private addController(controller: BaseRestController) {
-    const apiSpecs = controller.getApiSpecs()
+    const apiSpecs = controller._getApiSpecs()
 
     for (const spec of apiSpecs) {
       switch (spec.httpMethod) {
-        case 'GET':
-          this.server.get(spec.path, spec.controllerMethod)
+        case HTTP_METHODS.GET:
+          this.server.get(spec.path, spec.controllerMethod.bind(controller))
           break
-        case 'POST':
-          this.server.post(spec.path, spec.controllerMethod)
+        case HTTP_METHODS.POST:
+          this.server.post(spec.path, spec.controllerMethod.bind(controller))
           break
-        case 'PUT':
-          this.server.put(spec.path, spec.controllerMethod)
+        case HTTP_METHODS.PUT:
+          this.server.put(spec.path, spec.controllerMethod.bind(controller))
           break
-        case 'PATCH':
-          this.server.patch(spec.path, spec.controllerMethod)
+        case HTTP_METHODS.PATCH:
+          this.server.patch(spec.path, spec.controllerMethod.bind(controller))
           break
-        case 'DELETE':
-          this.server.delete(spec.path, spec.controllerMethod)
+        case HTTP_METHODS.DELETE:
+          this.server.delete(spec.path, spec.controllerMethod.bind(controller))
           break
       }
     }

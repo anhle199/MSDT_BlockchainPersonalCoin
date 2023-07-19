@@ -9,7 +9,8 @@
   "scripts": {
     "build": "tsc",
     "clean": "rm -rf dist && rm -rf *.tsbuildinfo",
-    "start": "npm run build && node dist/index.js"
+    "rebuild": "npm run clean && npm run build",
+    "start": "npm run rebuild && node dist/index.js"
   },
   "keywords": [
     "typescript",

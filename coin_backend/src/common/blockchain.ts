@@ -1,4 +1,4 @@
-import { AppConstants } from '../constants'
+import { ApplicationStorage } from '../global-storage'
 import { Block } from '../models'
 import { sha256 } from './crypto'
 
@@ -8,4 +8,4 @@ export const calculateBlockHash = (block: Omit<Block, 'hash'>) => {
   return sha256(inputHash)
 }
 
-export const getLatestBlock = () => AppConstants.BLOCKCHAIN[AppConstants.BLOCKCHAIN.length - 1]
+export const getLatestBlock = () => ApplicationStorage.BLOCKCHAIN[ApplicationStorage.BLOCKCHAIN.length - 1]

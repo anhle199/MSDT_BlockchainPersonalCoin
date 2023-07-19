@@ -1,9 +1,10 @@
 import { Request, Response } from 'express'
-import { AppConstants } from '../constants'
+import { getLatestBlock } from '../common'
+import { HTTP_METHODS } from '../constants'
+import { ApplicationStorage } from '../global-storage'
 import { BlockService } from '../services'
 import { TApiSpec } from '../types'
 import { BaseRestController } from './base'
-import { getLatestBlock } from '../common'
 
 export class BlockController extends BaseRestController {
   apiSpecs: TApiSpec[]
@@ -15,20 +16,20 @@ export class BlockController extends BaseRestController {
     this.service = new BlockService()
     this.apiSpecs = [
       {
-        httpMethod: 'GET',
+        httpMethod: HTTP_METHODS.GET,
         path: '/blocks',
-        controllerMethod: this.getAllBlocks.bind(this),
+        controllerMethod: this.getAllBlocks,
       },
       {
-        httpMethod: 'POST',
+        httpMethod: HTTP_METHODS.POST,
         path: '/blocks',
-        controllerMethod: this.mineBlock.bind(this),
+        controllerMethod: this.mineBlock,
       },
     ]
   }
 
   getAllBlocks(request: Request, response: Response) {
-    response.send(AppConstants.BLOCKCHAIN)
+    response.send(ApplicationStorage.BLOCKCHAIN)
   }
 
   mineBlock(request: Request, response: Response) {
