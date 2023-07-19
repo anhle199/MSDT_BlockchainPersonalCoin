@@ -1,5 +1,4 @@
 import { Request, Response } from 'express'
-import { getLatestBlock } from '../common'
 import { HTTP_METHODS } from '../constants'
 import { ApplicationStorage } from '../global-storage'
 import { BlockService } from '../services'
@@ -33,9 +32,9 @@ export class BlockController extends BaseRestController {
   }
 
   mineBlock(request: Request, response: Response) {
-    const newBlock = this.service.generateNewBlock(request.body.data, getLatestBlock())
-    if (this.service.addBlockToChain(newBlock)) {
-      response.send(newBlock)
+    const nextBlock = this.service.generateNextBlock(request.body.data)
+    if (nextBlock) {
+      response.send(nextBlock)
     } else {
       throw Error('Failed to add new block')
     }

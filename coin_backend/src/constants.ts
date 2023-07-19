@@ -24,3 +24,10 @@ export enum BLOCKCHAIN_MESSAGE_TYPES {
   QUERY_LATEST_BLOCK,
   RESPONSE_LATEST_BLOCK,
 }
+
+// in seconds
+export const BLOCK_GENERATION_INTERVAL = 10
+// in blocks
+export const DIFFICULTY_ADJUSTMENT_INTERVAL = 10
+// in seconds
+export const SECURITY_BLOCK_TIMESTAMP = 60

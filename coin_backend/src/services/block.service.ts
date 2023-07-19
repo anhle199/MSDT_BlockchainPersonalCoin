@@ -1,4 +1,15 @@
-import { broadcastLatestBlock, calculateBlockHash, getCurrentTimestamp, getLatestBlock } from '../common'
+import {
+  accumulateDifficulty,
+  broadcastLatestBlock,
+  calculateBlockHash,
+  calculateNewBlockDifficulty,
+  findNonce,
+  getCurrentTimestamp,
+  getLatestBlock,
+  hashMatchesDifficulty,
+  validateBlockTimestamp,
+} from '../common'
+import { SECURITY_BLOCK_TIMESTAMP } from '../constants'
 import { ApplicationStorage } from '../global-storage'
 import { Block } from '../models'
 
@@ -7,13 +18,32 @@ export class BlockService {
     const index = prevBlock.index + 1
     const previousHash = prevBlock.hash
     const timestamp = getCurrentTimestamp()
-    const hash = calculateBlockHash({ index, previousHash, timestamp, data })
-    return new Block({ index, hash, previousHash, timestamp, data })
+    const difficulty = calculateNewBlockDifficulty(ApplicationStorage.BLOCKCHAIN)
+    const nonce = findNonce(index, previousHash, timestamp, data, difficulty)
+    const hash = calculateBlockHash({ index, previousHash, timestamp, data, difficulty, nonce })
+    return new Block({ index, hash, previousHash, timestamp, data, difficulty, nonce })
+  }
+
+  generateNextBlock(data: string) {
+    const nextBlock = this.generateNewBlock(data, getLatestBlock())
+    if (this.addBlockToChain(nextBlock)) {
+      broadcastLatestBlock()
+      return nextBlock
+    }
+
+    return null
   }
 
   validateNewBlock(newBlock: Block, prevBlock: Block) {
     if (newBlock.index !== prevBlock.index + 1) {
       console.log(`invalid index, new: ${newBlock.index}, prev: ${prevBlock.index}`)
+      return false
+    }
+
+    if (!validateBlockTimestamp(newBlock, prevBlock)) {
+      console.log(
+        `invalid timestamp, new: ${newBlock.timestamp}, prev: ${prevBlock.timestamp}, security: ${SECURITY_BLOCK_TIMESTAMP}`,
+      )
       return false
     }
 
@@ -25,6 +55,11 @@ export class BlockService {
     const calculatedHash = calculateBlockHash(newBlock)
     if (newBlock.hash !== calculatedHash) {
       console.log(`invalid hash, new: ${newBlock.hash}, calculated: ${calculatedHash}`)
+      return false
+    }
+
+    if (!hashMatchesDifficulty(newBlock.hash, newBlock.difficulty)) {
+      console.log(`difficulty doesn't match to hash, hash: ${newBlock.hash}, difficulty: ${newBlock.difficulty}`)
       return false
     }
 
@@ -58,10 +93,15 @@ export class BlockService {
   }
 
   replaceChain(newChain: Block[]) {
-    if (this.validateChain(newChain) && newChain.length > ApplicationStorage.BLOCKCHAIN.length) {
-      console.log(`replacing current chain by new chain`)
-      ApplicationStorage.BLOCKCHAIN = newChain
-      broadcastLatestBlock()
+    if (this.validateChain(newChain)) {
+      const currenctCumulativeDifficulty = accumulateDifficulty(ApplicationStorage.BLOCKCHAIN)
+      const newCumulativeDifficulty = accumulateDifficulty(newChain)
+
+      if (newCumulativeDifficulty > currenctCumulativeDifficulty) {
+        console.log(`replacing current chain by new chain`)
+        ApplicationStorage.BLOCKCHAIN = newChain
+        broadcastLatestBlock()
+      }
     } else {
       console.log("failed to replace new chain because it's an invalid chain")
     }

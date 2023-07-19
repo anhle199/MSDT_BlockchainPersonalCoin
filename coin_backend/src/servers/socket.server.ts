@@ -1,9 +1,10 @@
 import WebSocket, { Server, WebSocketServer } from 'ws'
-import { EVENT_TYPES } from '../constants'
+import { getSocketRemoteUrl, sendMessage } from '../common'
+import { BLOCKCHAIN_MESSAGE_TYPES, EVENT_TYPES } from '../constants'
 import { BaseSocketController } from '../controllers'
 import { SocketServerStorage } from '../global-storage'
+import { BlockchainMessageProvider } from '../providers'
 import { TSocketServerConfig } from '../types'
-import { getSocketRemoteUrl } from '../common'
 
 export class SocketServer {
   protected server: Server
@@ -29,6 +30,9 @@ export class SocketServer {
         for (const controller of controllers) {
           this.addController(controller, socket, [EVENT_TYPES.ALL, EVENT_TYPES.SERVER])
         }
+
+        const message = BlockchainMessageProvider.instance.getMessage(BLOCKCHAIN_MESSAGE_TYPES.QUERY_LATEST_BLOCK)
+        sendMessage(socket, message)
       })
 
       this.isSetup = true
@@ -50,9 +54,8 @@ export class SocketServer {
     const eventSpecs = controller._getEventSpecs().filter(it => eventTypes.includes(it.eventType))
 
     for (const spec of eventSpecs) {
-      socket.on(spec.eventName, (args) => {
-        console.log('args', args)
-        spec.callback.call(controller, socket, args) 
+      socket.on(spec.eventName, args => {
+        spec.callback.call(controller, socket, args)
       })
     }
   }
@@ -69,6 +72,9 @@ export class SocketServer {
       for (const controller of controllers) {
         this.addController(controller, client, [EVENT_TYPES.ALL, EVENT_TYPES.CLIENT])
       }
+
+      const message = BlockchainMessageProvider.instance.getMessage(BLOCKCHAIN_MESSAGE_TYPES.QUERY_LATEST_BLOCK)
+      sendMessage(client, message)
     })
 
     client.on('error', () => {

@@ -43,9 +43,9 @@ export class SocketController extends BaseSocketController {
     ]
   }
 
+  // message: Buffer
   handleMessageEvent(socket: WebSocket, message: string) {
-    console.log(`[socket-message]: ${socket}, ${message}`)
-    console.log(`[socket-message]: Received message`, message)
+    console.log(`[socket-message]: ${getSocketRemoteUrl(socket)}, ${message}`)
 
     const jsonMessage = safeParseJson<TMessage>(message)
     if (isUndefined(jsonMessage)) {
@@ -53,7 +53,6 @@ export class SocketController extends BaseSocketController {
       return
     }
 
-    console.log('Received message' + JSON.stringify(message))
     const { type: messageType, data } = jsonMessage
 
     // respond to sender
@@ -62,12 +61,12 @@ export class SocketController extends BaseSocketController {
 
     switch (messageType) {
       case SOCKET_MESSAGE_TYPES.QUERY_LATEST_BLOCK:
-        blockchainMessageType = BLOCKCHAIN_MESSAGE_TYPES.QUERY_LATEST_BLOCK
+        blockchainMessageType = BLOCKCHAIN_MESSAGE_TYPES.RESPONSE_LATEST_BLOCK
         messageToSend = BlockchainMessageProvider.instance.getMessage(blockchainMessageType)
         sendMessage(socket, messageToSend)
         break
       case SOCKET_MESSAGE_TYPES.QUERY_CHAIN:
-        blockchainMessageType = BLOCKCHAIN_MESSAGE_TYPES.QUERY_CHAIN
+        blockchainMessageType = BLOCKCHAIN_MESSAGE_TYPES.RESPONSE_CHAIN
         messageToSend = BlockchainMessageProvider.instance.getMessage(blockchainMessageType)
         sendMessage(socket, messageToSend)
         break
@@ -94,7 +93,7 @@ export class SocketController extends BaseSocketController {
 
   private handleBlockchainResponse(receivedBlocks: Block[]) {
     if (receivedBlocks.length === 0) {
-      console.log('received block chain size of 0')
+      console.log('Received block chain size of 0')
       return
     }
 
@@ -124,7 +123,7 @@ export class SocketController extends BaseSocketController {
         this.blockService.replaceChain(safeReceivedBlocks)
       }
     } else {
-      console.log('received blockchain is not longer than received blockchain. Do nothing')
+      console.log('Received blockchain is not longer than received blockchain. Do nothing')
     }
   }
 }
