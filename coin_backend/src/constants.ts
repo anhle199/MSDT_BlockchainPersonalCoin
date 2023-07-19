@@ -34,4 +34,10 @@ export const SECURITY_BLOCK_TIMESTAMP = 60
 
 export enum SCHEMA_TYPES {
   BLOCK = 'block',
+  //UNSPENT_TRANSACTION_OUTPUT = 'unspent-transaction-output',
+  //TRANSACTION_INPUT = 'transaction-input',
+  //TRANSACTION_OUTPUT = 'transaction-output',
+  TRANSACTION = 'transaction',
 }
+
+export const COINBASE_AMOUNT = 50

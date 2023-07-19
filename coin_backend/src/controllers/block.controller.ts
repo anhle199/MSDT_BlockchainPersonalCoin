@@ -32,7 +32,7 @@ export class BlockController extends BaseRestController {
   }
 
   mineBlock(request: Request, response: Response) {
-    const nextBlock = this.service.generateNextBlock(request.body.data)
+    const nextBlock = this.service.generateNextBlock([])
     if (nextBlock) {
       response.send(nextBlock)
     } else {

@@ -11,10 +11,17 @@ import {
 } from '../common'
 import { SECURITY_BLOCK_TIMESTAMP } from '../constants'
 import { ApplicationStorage } from '../global-storage'
-import { Block } from '../models'
+import { Block, Transaction } from '../models'
+import { TransactionService } from './transaction.service'
 
 export class BlockService {
-  generateNewBlock(data: string, prevBlock: Block) {
+  transactionService: TransactionService
+
+  constructor(transactionService?: TransactionService) {
+    this.transactionService = transactionService ?? new TransactionService()
+  }
+
+  createBlock(data: Transaction[], prevBlock: Block) {
     const index = prevBlock.index + 1
     const previousHash = prevBlock.hash
     const timestamp = getCurrentTimestamp()
@@ -24,8 +31,13 @@ export class BlockService {
     return new Block({ index, hash, previousHash, timestamp, data, difficulty, nonce })
   }
 
-  generateNextBlock(data: string) {
-    const nextBlock = this.generateNewBlock(data, getLatestBlock())
+  generateNextBlock(data: Transaction[]) {
+    const latestBlock = getLatestBlock()
+    const coinbaseTx = this.transactionService.generateCoinbaseTransaction('', latestBlock.index + 1)
+    const transactions = [coinbaseTx, ...data]
+
+    const nextBlock = this.createBlock(transactions, latestBlock)
+
     if (this.addBlockToChain(nextBlock)) {
       broadcastLatestBlock()
       return nextBlock
@@ -83,25 +95,39 @@ export class BlockService {
     return true
   }
 
+  // TODO: private key - address
   addBlockToChain(newBlock: Block) {
-    if (this.validateNewBlock(newBlock, getLatestBlock())) {
-      ApplicationStorage.BLOCKCHAIN.push(newBlock)
-      return true
+    if (!this.validateNewBlock(newBlock, getLatestBlock())) {
+      return false
     }
 
-    return false
+    const unspentTxOutputs = ApplicationStorage.UNSPENT_TRANSACTION_OUTPUTS
+    const { data: transactions, index } = newBlock
+
+    if (
+      !this.transactionService.validateBlockTransactionsStructure(transactions) ||
+      !this.transactionService.validateBlockTransactions(transactions, unspentTxOutputs, '', index)
+    ) {
+      return false
+    }
+
+    ApplicationStorage.BLOCKCHAIN.push(newBlock)
+    ApplicationStorage.UNSPENT_TRANSACTION_OUTPUTS = this.transactionService.updateUnspentTransactionOutputs(
+      transactions,
+      unspentTxOutputs,
+    )
+
+    return true
   }
 
   replaceChain(newChain: Block[]) {
-    if (this.validateChain(newChain)) {
-      const currenctCumulativeDifficulty = accumulateDifficulty(ApplicationStorage.BLOCKCHAIN)
-      const newCumulativeDifficulty = accumulateDifficulty(newChain)
-
-      if (newCumulativeDifficulty > currenctCumulativeDifficulty) {
-        console.log(`replacing current chain by new chain`)
-        ApplicationStorage.BLOCKCHAIN = newChain
-        broadcastLatestBlock()
-      }
+    if (
+      this.validateChain(newChain) &&
+      accumulateDifficulty(newChain) > accumulateDifficulty(ApplicationStorage.BLOCKCHAIN)
+    ) {
+      console.log(`replacing current chain by new chain`)
+      ApplicationStorage.BLOCKCHAIN = newChain
+      broadcastLatestBlock()
     } else {
       console.log("failed to replace new chain because it's an invalid chain")
     }

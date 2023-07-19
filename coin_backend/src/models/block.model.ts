@@ -1,11 +1,12 @@
 import { JSONSchemaType } from 'ajv'
+import { Transaction, TRANSACTION_SCHEMA } from './transaction.model'
 
 export class Block {
   index: number
   hash: string
   previousHash: string
   timestamp: number
-  data: string
+  data: Transaction[]
   difficulty: number
   nonce: number
 
@@ -38,7 +39,8 @@ export const BLOCK_SCHEMA: JSONSchemaType<Block> = {
       type: 'number',
     },
     data: {
-      type: 'string',
+      type: 'array',
+      items: TRANSACTION_SCHEMA,
     },
     difficulty: {
       type: 'integer',

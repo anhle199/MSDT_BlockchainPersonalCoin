@@ -3,10 +3,10 @@ import { TApplicationStorage, TSocketServerStorage } from './types'
 
 const GENESIS_BLOCK = new Block({
   index: 0,
-  hash: '4554647a7bb0374593c7cdf952f527d81813a5e876606fa788a9be0fdd85900d',
+  hash: 'c5d8745eb27754730eb888303f2be1cb231424d19c62a2ef75929f09c7345399',
   previousHash: '',
   timestamp: 1689671599,
-  data: 'this is genesis block',
+  data: [],
   difficulty: 0,
   nonce: 0,
 })
@@ -15,6 +15,7 @@ const GENESIS_BLOCK = new Block({
 export const ApplicationStorage: TApplicationStorage = {
   GENESIS_BLOCK: GENESIS_BLOCK,
   BLOCKCHAIN: [GENESIS_BLOCK],
+  UNSPENT_TRANSACTION_OUTPUTS: [],
 }
 
 // socket server level storage

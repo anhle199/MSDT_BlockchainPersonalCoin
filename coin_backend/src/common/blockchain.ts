@@ -1,14 +1,24 @@
 import { BLOCK_GENERATION_INTERVAL, DIFFICULTY_ADJUSTMENT_INTERVAL, SECURITY_BLOCK_TIMESTAMP } from '../constants'
 import { ApplicationStorage } from '../global-storage'
-import { Block } from '../models'
+import { Block, Transaction } from '../models'
 import { hexToBinary } from './base-number'
 import { sha256 } from './crypto'
 import { getCurrentTimestamp } from './datetime'
 
 export const calculateBlockHash = (block: Omit<Block, 'hash'>) => {
-  const { index, previousHash, timestamp, data } = block
-  const inputHash = index.toString() + previousHash + timestamp.toString() + data
-  return sha256(inputHash)
+  const { index, previousHash, timestamp, data, difficulty, nonce } = block
+
+  const transactionDataToHash = data.map(tx => tx.id).toString()
+  const inputHash = [
+    index.toString(),
+    previousHash,
+    timestamp.toString(),
+    transactionDataToHash,
+    difficulty.toString(),
+    nonce.toString(),
+  ]
+
+  return sha256(inputHash.join(''))
 }
 
 export const getLatestBlock = () => ApplicationStorage.BLOCKCHAIN[ApplicationStorage.BLOCKCHAIN.length - 1]
@@ -44,7 +54,7 @@ export const hashMatchesDifficulty = (hash: string, difficulty: number) => {
   return hashInBinary.startsWith(requiredPrefix)
 }
 
-export const findNonce = (index: number, previousHash: string, timestamp: number, data: string, difficulty: number) => {
+export const findNonce = (index: number, previousHash: string, timestamp: number, data: Transaction[], difficulty: number) => {
   let nonce = 0
   while (true) {
     const hash = calculateBlockHash({ index, previousHash, timestamp, data, difficulty, nonce })
