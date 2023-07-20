@@ -1,7 +1,7 @@
 {
-  "name": "@anhle199/blockchain_personal_coin",
+  "name": "ha_coin_backend",
   "version": "1.0.0",
-  "description": "",
+  "description": "Hoang Anh's personal coin. This package purposes to study.",
   "main": "dist/index.js",
   "engines": {
     "node": ">=16"
@@ -17,7 +17,17 @@
     "project template",
     "typescript project template"
   ],
-  "author": "Le Hoang Anh",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/anhle199/MSDT_BlockchainPersonalCoin"
+  },
+  "author": "Le Hoang Anh <lehoanganh.le2001@gmail.com>",
+  "files": [
+    "README.md",
+    "dist",
+    "src",
+    "data"
+  ],
   "license": "ISC",
   "devDependencies": {
     "@types/elliptic": "^6.4.14",

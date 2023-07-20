@@ -9,7 +9,7 @@ dotenv.config()
 // absolute path
 const privateKeyLocation = getEnv('PRIVATE_KEY_PATH', {
   throwErrorIfNotExists: false,
-  defaultValue: path.resolve(__dirname, '../data/private_key.txt'),
+  defaultValue: path.resolve(__dirname, '../data/private_key'),
 })
 
 export class Wallet {
