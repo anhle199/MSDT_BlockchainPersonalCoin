@@ -15,12 +15,12 @@ export class WalletController extends BaseRestController {
     this.apiSpecs = [
       {
         httpMethod: HTTP_METHODS.GET,
-        path: '/wallet/address',
+        path: '/wallets/address',
         controllerMethod: this.getAccountAddress,
       },
       {
         httpMethod: HTTP_METHODS.GET,
-        path: '/wallet/balance',
+        path: '/wallets/balance',
         controllerMethod: this.getAccountBalance,
       },
     ]

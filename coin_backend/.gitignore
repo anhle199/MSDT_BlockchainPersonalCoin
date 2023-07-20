@@ -35,4 +35,4 @@ testem.log
 *.env*
 !.env.template
 
-data/private_key.txt
+data/*private_key*

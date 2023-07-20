@@ -20,22 +20,22 @@ export class TransactionController extends BaseRestController {
     this.apiSpecs = [
       {
         httpMethod: HTTP_METHODS.GET,
-        path: '/transaction/unspentOutputs',
+        path: '/transactions/unspentOutputs',
         controllerMethod: this.getAllUnspentTransactionOutputs,
       },
       {
-        httpMethod: HTTP_METHODS.POST,
-        path: '/transaction/pool',
+        httpMethod: HTTP_METHODS.GET,
+        path: '/transactions/pool',
         controllerMethod: this.getTransactionPool,
       },
       {
         httpMethod: HTTP_METHODS.GET,
-        path: '/transaction/:id',
+        path: '/transactions/:id',
         controllerMethod: this.getTransactionById,
       },
       {
         httpMethod: HTTP_METHODS.POST,
-        path: '/transaction/send',
+        path: '/transactions/send',
         controllerMethod: this.sendTransaction,
       },
     ]

@@ -84,18 +84,19 @@ export class TransactionService {
     const calculatedTxId = calculateTransactionId(transaction)
     if (calculatedTxId !== id) {
       console.log(`invalid transaction id: calculated: ${calculateTransactionId}, transaction: ${id}`)
+      return false
     }
 
     // validate coinbase transaction input
-    if (inputs.length !== 1 || inputs[0].outputIndex === blockIndex) {
-      // origin: inputs.length !== 1 || inputs[0].outputIndex === blockIndex || inputs[0].outputId === '' || inputs[0].signature === ''
+    if (inputs.length !== 1 || inputs[0].outputIndex !== blockIndex) {
+      // origin: inputs.length !== 1 || inputs[0].outputIndex !== blockIndex || inputs[0].outputId !== '' || inputs[0].signature !== ''
       console.log(`invalid coinbase transaction input: ${JSON.stringify(inputs)}`)
       return false
     }
 
     // validate coinbase transaction output
-    if (outputs.length !== 1 || outputs[0].amount === COINBASE_AMOUNT) {
-      // origin: outputs.length !== 1 || outputs[0].address === publicKey || outputs[0].amount === COINBASE_AMOUNT
+    if (outputs.length !== 1 || outputs[0].amount !== COINBASE_AMOUNT) {
+      // origin: outputs.length !== 1 || outputs[0].address !== publicKey || outputs[0].amount !== COINBASE_AMOUNT
       console.log(`invalid coinbase transaction output: ${JSON.stringify(outputs)}`)
       return false
     }
@@ -115,6 +116,7 @@ export class TransactionService {
     const coinbaseTx = transactions[0]
     if (!this.validateCoinbaseTransaction(coinbaseTx, blockIndex)) {
       console.log(`invalid coinbase transaction: ${(JSON.stringify, coinbaseTx)}`)
+      return false
     }
 
     // each transactions' tx output will only be referenced by one tx input

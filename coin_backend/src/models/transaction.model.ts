@@ -111,14 +111,10 @@ export const TRANSACTION_SCHEMA: JSONSchemaType<Transaction> = {
     inputs: {
       type: 'array',
       items: TRANSACTION_INPUT_SCHEMA,
-      minItems: 1,
-      maxItems: 1,
     },
     outputs: {
       type: 'array',
       items: TRANSACTION_OUTPUT_SCHEMA,
-      minItems: 1,
-      maxItems: 1,
     },
   },
   required: ['id', 'inputs', 'outputs'],
