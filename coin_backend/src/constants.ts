@@ -45,3 +45,5 @@ export enum SCHEMA_TYPES {
 }
 
 export const COINBASE_AMOUNT = 50
+
+export const REQUEST_SCHEMAS = {}

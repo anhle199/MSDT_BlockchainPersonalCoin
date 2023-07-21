@@ -1,3 +1,4 @@
+import cors from 'cors'
 import express, { Express } from 'express'
 import { HTTP_METHODS } from '../constants'
 import { BaseRestController } from '../controllers'
@@ -17,6 +18,7 @@ export class RestServer {
 
   setup() {
     if (!this.isSetup) {
+      this.server.use(cors())
       this.server.use(express.json())
       this.server.use(express.urlencoded({ extended: true }))
 

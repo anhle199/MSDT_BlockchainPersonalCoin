@@ -8,7 +8,7 @@ import { AccessWallet } from './pages/access-wallet'
 import { CreateWallet } from './pages/create-wallet'
 import { InternalError } from './pages/errors'
 import { Home } from './pages/home'
-import { WalletPortfolio } from './pages/wallet'
+import { SendTransaction, WalletPortfolio } from './pages/wallet'
 
 import 'bootstrap-icons/font/bootstrap-icons.css'
 import 'bootstrap/dist/css/bootstrap.min.css'
@@ -64,7 +64,7 @@ const router = createBrowserRouter([
       },
       {
         path: 'send',
-        element: <div>send</div>,
+        element: <SendTransaction />,
       },
       {
         path: 'history',

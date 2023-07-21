@@ -55,7 +55,7 @@ export class TransactionController extends BaseRestController {
     if (!isString(id)) {
       return response.status(422).send({
         error: {
-          code: 'INVALID_QUERY_PARAMETERS',
+          code: 'INVALID_PATH_PARAMETERS',
           message: 'Invalid transaction id',
         },
       })

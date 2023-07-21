@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import Image from 'react-bootstrap/Image'
 import ListGroup from 'react-bootstrap/ListGroup'
-import { useNavigate } from 'react-router-dom'
-import { IMAGES } from '../../constants'
+import { useLocation, useNavigate } from 'react-router-dom'
+import { APPLICATION_PATHS, IMAGES } from '../../constants'
 import { TSidebarMenuItem } from '../../types'
 
 export type TSidebarProps = {
@@ -10,17 +10,29 @@ export type TSidebarProps = {
 }
 
 export function Sidebar(props: TSidebarProps) {
+  const location = useLocation()
   const [selectedMenuItem, setSelectedMenuItem] = useState<TSidebarMenuItem | undefined>(props.menuItems[0])
   const navigate = useNavigate()
 
   const handleSelectMenuItem = (menuItem: TSidebarMenuItem) => {
     setSelectedMenuItem(menuItem)
-    navigate(menuItem.path)
+
+    const privatePaths = [
+      APPLICATION_PATHS.walletPortfolio,
+      APPLICATION_PATHS.walletSendTransaction,
+      APPLICATION_PATHS.walletTransactionHistory,
+    ]
+    const nextState = privatePaths.includes(menuItem.path) ? location.state : null
+    navigate(menuItem.path, { state: nextState })
+  }
+
+  const handleGoHome = () => {
+    navigate(APPLICATION_PATHS.createWallet, { replace: true })
   }
 
   return (
     <div className="d-flex flex-column shadow" style={{ minWidth: 250, maxWidth: 250, background: 'white' }}>
-      <div className="d-flex align-items-center m-3">
+      <div className="d-flex align-items-center m-3" onClick={handleGoHome}>
         <Image className="me-2" src={IMAGES.cryptoWallet} style={{ width: 40, height: 40 }} />
         <div className="fs-3 fw-bold">HA Wallet</div>
       </div>
@@ -39,7 +51,7 @@ export function Sidebar(props: TSidebarProps) {
               {item.name}
             </ListGroup.Item>
           ) : (
-            <hr />
+            <hr key={item.id} />
           ),
         )}
       </ListGroup>

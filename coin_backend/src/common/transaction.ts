@@ -68,3 +68,8 @@ export const calculateTxOutputsForAmount = (amount: number, unspentTxOutputs: Un
 
   // return undefined
 }
+
+export const validateAddress = (address: string): address is string => {
+  const regex = /^04[a-fA-F0-9]+$/
+  return typeof address === 'string' && address.length === 130 && regex.test(address)
+}

@@ -1,5 +1,7 @@
 import cryptoWallet from './assets/crypto-wallet.png'
-import { TSidebarMenuItem } from './types'
+import eth from './assets/ethereum.png'
+import { getEnv } from './common'
+import { TAppEnvs, TSidebarMenuItem } from './types'
 
 export const APPLICATION_PATHS = {
   home: '/',
@@ -12,6 +14,7 @@ export const APPLICATION_PATHS = {
 
 export const IMAGES = {
   cryptoWallet,
+  cryptoLogo: eth,
 }
 
 export const SIDEBAR_MENU_ITEMS: TSidebarMenuItem[] = [
@@ -58,3 +61,7 @@ export const SIDEBAR_MENU_ITEMS: TSidebarMenuItem[] = [
     type: 'button',
   },
 ]
+
+export const APPLICATION_ENVS: TAppEnvs = {
+  API_URL: getEnv('REACT_APP_API_URL')
+}

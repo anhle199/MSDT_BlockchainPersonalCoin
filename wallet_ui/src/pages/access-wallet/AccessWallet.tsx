@@ -22,6 +22,14 @@ export function AccessWallet() {
 
   const handleVerfiyKeystoreFile = (event: FormEvent) => {
     event.preventDefault()
+
+    //const keyPair: TKeyPairContent = {
+    //privateKey: '35261aca5fded8c854ca0ef087c55723281d8d27b9395653446ac54d94866cf3',
+    //publicKey:
+    //'04547bcec1752285ccda0bedb962afdb5eb64f1bd82fec6d8ef06310cedb13262a0164abc08e98910221d7da44a970a1fa5c3f3c5a16855a99106cf6b85e16ce69',
+    //}
+
+    //navigate(APPLICATION_PATHS.walletPortfolio, { state: keyPair })
     setIsVerifying(true)
 
     if (keystoreFile) {

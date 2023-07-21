@@ -10,3 +10,7 @@ export type TSidebarMenuItem = {
   icon: string
   type: string
 }
+
+export type TAppEnvs = {
+  API_URL: string
+}
