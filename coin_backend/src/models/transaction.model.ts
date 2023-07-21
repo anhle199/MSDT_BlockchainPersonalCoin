@@ -40,11 +40,13 @@ export class Transaction {
   id: string
   inputs: TransactionInput[]
   outputs: TransactionOutput[]
+  timestamp: number
 
   constructor(transaction: Transaction) {
     this.id = transaction.id
     this.inputs = transaction.inputs
     this.outputs = transaction.outputs
+    this.timestamp = transaction.timestamp
   }
 }
 
@@ -116,7 +118,10 @@ export const TRANSACTION_SCHEMA: JSONSchemaType<Transaction> = {
       type: 'array',
       items: TRANSACTION_OUTPUT_SCHEMA,
     },
+    timestamp: {
+      type: 'number',
+    },
   },
-  required: ['id', 'inputs', 'outputs'],
+  required: ['id', 'inputs', 'outputs', 'timestamp'],
   additionalProperties: false,
 }

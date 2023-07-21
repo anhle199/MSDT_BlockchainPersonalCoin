@@ -35,8 +35,13 @@ export class TransactionController extends BaseRestController {
       },
       {
         httpMethod: HTTP_METHODS.POST,
-        path: '/transactions/send',
-        controllerMethod: this.sendTransaction,
+        path: '/transactions/sendAmount',
+        controllerMethod: this.sendTransactionWithAmount,
+      },
+      {
+        httpMethod: HTTP_METHODS.POST,
+        path: '/transactions/sendSigned',
+        controllerMethod: this.sendSignedTransaction,
       },
     ]
   }
@@ -75,7 +80,7 @@ export class TransactionController extends BaseRestController {
     response.send(transaction)
   }
 
-  sendTransaction(request: Request, response: Response) {
+  sendTransactionWithAmount(request: Request, response: Response) {
     const address = String(request.body.address)
     const amount = Number(request.body.amount)
 
@@ -104,6 +109,25 @@ export class TransactionController extends BaseRestController {
         error: {
           code: 'FAILED_TO_ADD_TO_TRANSACTION_POOL',
           message: 'Failed to add to transaction pool',
+        },
+      })
+    }
+
+    broadcastTransactionPool()
+    response.send(transaction)
+  }
+
+  sendSignedTransaction(request: Request, response: Response) {
+    const transaction = request.body
+    const isAdded = this.transactionPoolService.addToTransactionPool(
+      transaction,
+      ApplicationStorage.UNSPENT_TRANSACTION_OUTPUTS,
+    )
+    if (!isAdded) {
+      return response.status(400).send({
+        error: {
+          code: 'FAILED_TO_SEND_SIGNED_TRANSACTION',
+          message: 'Failed to send signed transaction, cannot add to transaction pool',
         },
       })
     }

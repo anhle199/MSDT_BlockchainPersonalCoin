@@ -39,7 +39,7 @@ export function AccessWallet() {
       reader.onload = () => {
         const keyPair = safeParseJson<TKeyPairContent>(reader.result as any)
         if (keyPair && keyPair.publicKey === getPublicKeyFromPrivate(keyPair.privateKey)) {
-          navigate(APPLICATION_PATHS.walletPortfolio)
+          navigate(APPLICATION_PATHS.walletPortfolio, { state: keyPair })
         } else {
           setErrorMessage('The keystore file is invalid.')
         }

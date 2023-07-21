@@ -5,8 +5,8 @@ import { TAppEnvs, TSidebarMenuItem } from './types'
 
 export const APPLICATION_PATHS = {
   home: '/',
-  createWallet: '/wallet/create',
-  accessWallet: '/wallet/access',
+  createWallet: '/create',
+  accessWallet: '/access',
   walletPortfolio: '/wallet/portfolio',
   walletSendTransaction: '/wallet/send',
   walletTransactionHistory: '/wallet/history',

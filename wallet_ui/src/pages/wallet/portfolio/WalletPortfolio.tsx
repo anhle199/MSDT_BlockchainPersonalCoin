@@ -13,7 +13,6 @@ export function WalletPortfolio() {
   //const [latestBlockNumber, setLatestBlockNumber] = useState<number>(0)
 
   useEffect(() => {
-    console.log(location.state)
     if (location.state) {
       setKeyPair(location.state)
 
@@ -24,7 +23,7 @@ export function WalletPortfolio() {
         })
         .catch(error => {
           setBalance(0)
-          console.log(error)
+          //console.log(error)
         })
     } else {
       navigate(APPLICATION_PATHS.createWallet, { replace: true })
@@ -41,7 +40,7 @@ export function WalletPortfolio() {
       setBalance(balance)
     } catch (error) {
       setBalance(0)
-      console.log(error)
+      //console.log(error)
     }
   }
 
@@ -52,7 +51,7 @@ export function WalletPortfolio() {
           <Card>
             <Card.Header>Wallet Information</Card.Header>
             <Card.Body>
-              <Form.Group as={Row} className="mb-3" controlId="formPlaintextBalance">
+              <Form.Group as={Row} className="mb-3" controlId="formBalance">
                 <Form.Label column sm="2">
                   Balance (coins)
                 </Form.Label>
@@ -64,7 +63,7 @@ export function WalletPortfolio() {
                 </Col>
               </Form.Group>
 
-              <Form.Group as={Row} className="mb-3" controlId="formPlaintextAddress">
+              <Form.Group as={Row} className="mb-3" controlId="formAddress">
                 <Form.Label column sm="2">
                   Address
                 </Form.Label>

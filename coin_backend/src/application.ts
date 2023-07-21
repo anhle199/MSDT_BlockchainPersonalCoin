@@ -15,6 +15,8 @@ export class Application {
     this.restServer.setup()
     this.socketServer.setup()
     Wallet.instance.init()
+    console.log(Wallet.instance.getPrivateKey())
+    console.log(Wallet.instance.getPublicKey())
   }
 
   start() {

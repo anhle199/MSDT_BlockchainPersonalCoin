@@ -12,7 +12,7 @@ export const calculateTransactionId = (transaction: Omit<Transaction, 'id'>) => 
     '',
   )
 
-  return sha256(txInputContent + txOutputContent)
+  return sha256(txInputContent + txOutputContent + transaction.timestamp.toString())
 }
 
 export const signTransactionInput = (

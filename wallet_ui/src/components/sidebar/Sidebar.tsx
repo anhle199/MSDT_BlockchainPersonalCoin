@@ -32,7 +32,7 @@ export function Sidebar(props: TSidebarProps) {
 
   return (
     <div className="d-flex flex-column shadow" style={{ minWidth: 250, maxWidth: 250, background: 'white' }}>
-      <div className="d-flex align-items-center m-3" onClick={handleGoHome}>
+      <div className="d-flex align-items-center m-3">
         <Image className="me-2" src={IMAGES.cryptoWallet} style={{ width: 40, height: 40 }} />
         <div className="fs-3 fw-bold">HA Wallet</div>
       </div>

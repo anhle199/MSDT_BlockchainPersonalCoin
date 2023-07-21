@@ -3,6 +3,7 @@ import {
   calculateTransactionId,
   calculateTxOutputsForAmount,
   findUnspentTxOutput,
+  getCurrentTimestamp,
   getPublicKeyFromPrivate,
   signTransactionInput,
   validateAvailbleSchema,
@@ -20,7 +21,12 @@ export class TransactionService {
       signature: '',
     })
 
-    const transactionWithoutId: Omit<Transaction, 'id'> = { inputs: [txInput], outputs: [txOutput] }
+    const timestamp = getCurrentTimestamp()
+    const transactionWithoutId: Omit<Transaction, 'id'> = {
+      inputs: [txInput],
+      outputs: [txOutput],
+      timestamp,
+    }
     const transactionId = calculateTransactionId(transactionWithoutId)
 
     return new Transaction({ ...transactionWithoutId, id: transactionId })
@@ -210,12 +216,17 @@ export class TransactionService {
     )
 
     const txOutputs = this.createTransactionOutput(receiverAddress, senderAddress, amount, leftOverAmount)
-    const transactionId = calculateTransactionId({ inputs: unsignedTxInputs, outputs: txOutputs })
+    const timestamp = getCurrentTimestamp()
+    const transactionId = calculateTransactionId({
+      inputs: unsignedTxInputs,
+      outputs: txOutputs,
+      timestamp,
+    })
     const signedTxInputs = unsignedTxInputs.map(it => {
       it.signature = signTransactionInput(transactionId, it, privateKey, senderUnspentTxOutputs)
       return it
     })
 
-    return new Transaction({ id: transactionId, inputs: signedTxInputs, outputs: txOutputs })
+    return new Transaction({ id: transactionId, inputs: signedTxInputs, outputs: txOutputs, timestamp })
   }
 }

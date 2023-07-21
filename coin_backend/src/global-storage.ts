@@ -3,7 +3,7 @@ import { Block, Transaction, TransactionInput, TransactionOutput } from './model
 import { TApplicationStorage, TSocketServerStorage } from './types'
 
 const GENESIS_TRANSACTION = new Transaction({
-  id: '4186dca35da0d355e9bcfd661e0b8183bbb33292008320e68efac08c0e01198b',
+  id: 'f705d94d4a4d922068bf5a11313e3232311f52e13462621aaf19544269843348',
   inputs: [new TransactionInput({ outputId: '', outputIndex: 0, signature: '' })],
   outputs: [
     new TransactionOutput({
@@ -12,10 +12,11 @@ const GENESIS_TRANSACTION = new Transaction({
       amount: COINBASE_AMOUNT,
     }),
   ],
+  timestamp: 1689671590
 })
 const GENESIS_BLOCK = new Block({
   index: 0,
-  hash: 'c1e74dc402f91947be3a862d9d4eb599469be4d6c90c6dcb20faaed2a2d5e697',
+  hash: '468f3715710b8d8c4e8e04e7ee722e68ff342ff0204a2acf7750df6f52fdb296',
   previousHash: '',
   timestamp: 1689671599,
   data: [GENESIS_TRANSACTION],
